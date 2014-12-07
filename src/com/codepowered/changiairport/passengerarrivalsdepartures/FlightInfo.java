@@ -62,7 +62,8 @@ public class FlightInfo extends ArrayList<Flight> {
 		for (int i = 0; i < len; i++) {
 			json = jsonArray.getJSONObject(i);
 			Flight flight = Flight.parse(i, info, json, resources, packageName);
-			info.add(flight);
+			if (flight.getMaster_flight_no().equals(flight.getFlight_no()))
+				info.add(flight);
 		}
 		return info;
 	}
