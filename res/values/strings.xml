@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Changi Airport Passenger Arrivals/Departures</string>
+    <string name="airport_name">Changi Airport</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="arriving">Arrivals</string>
+    <string name="departing">Departures</string>
+    <string name="title_activity_main">Changi Airport</string>
+    <string name="title_activity_arrivals">ArrivalsActivity</string>
+    <string name="title_activity_departures">DeparturesActivity</string>
+    <string name="title_activity_load_data">LoadDataActivity</string>
+    <string name="select_arrival_from">Select arrival from airport:</string>
+    <string name="select_departure_to">Select departure to airport:</string>
+    <string name="lblScheduledTime">Scheduled: </string>
+    <string name="lblEstimatedTime">Estimated: </string>
+    <string name="arrivalFromVia">From %1$s (via %2$s)</string>
+    <string name="arrivalFrom">From %1$s</string>
+    <string name="departureToVia">To %1$s (via %2$s)</string>
+    <string name="departureTo">To %1$s</string>
+
+</resources>
