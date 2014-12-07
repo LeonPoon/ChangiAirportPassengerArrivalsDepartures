@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
+import android.util.Log;
 
 public class Flight implements Comparable<Flight> {
 
@@ -233,9 +234,12 @@ public class Flight implements Comparable<Flight> {
 
 	public static String translate(Resources resources, String packageName,
 			String itemType, String val) {
-		int id = resources.getIdentifier(itemType + "/" + val, "string",
-				packageName);
-		if (id != 0)
+		String idStr = itemType + "."
+				+ (val == null ? "" : val.replaceAll("[^A-Za-z0-9_]", "_"));
+		int id = resources.getIdentifier(idStr, "string", packageName);
+		if (id == 0)
+			Log.i("translation", idStr);
+		else
 			try {
 				val = resources.getString(id);
 			} catch (NotFoundException e) {

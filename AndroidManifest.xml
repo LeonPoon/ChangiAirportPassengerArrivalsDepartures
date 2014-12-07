@@ -12,7 +12,8 @@
 
     <application
         android:allowBackup="false"
-        android:icon="@drawable/ic_launcher" >
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name" >
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main" >
@@ -22,18 +23,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ArrivalsActivity"
-            android:label="@string/title_activity_arrivals" >
+        <activity android:name=".ArrivalsActivity" >
         </activity>
-        <activity
-            android:name=".DeparturesActivity"
-            android:label="@string/title_activity_departures" >
+        <activity android:name=".DeparturesActivity" >
         </activity>
         <activity
             android:name=".LoadDataActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_load_data"
             android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" >
         </activity>
     </application>

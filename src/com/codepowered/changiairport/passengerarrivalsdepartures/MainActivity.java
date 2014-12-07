@@ -100,8 +100,8 @@ public class MainActivity extends Activity implements DataTarget,
 
 		@Override
 		protected void onPreExecute() {
-			dialog = ProgressDialog.show(MainActivity.this, "Loading",
-					"Loading...");
+			dialog = ProgressDialog.show(MainActivity.this,
+					getText(R.string.loading), getText(R.string.pleaseWait));
 		}
 
 		@Override
