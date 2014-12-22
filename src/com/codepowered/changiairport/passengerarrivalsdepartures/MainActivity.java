@@ -286,6 +286,9 @@ public class MainActivity extends Activity implements DataTarget,
 
 	@Override
 	public void setAirports(Airports airports) {
+		for (String code : getResources()
+				.getStringArray(R.array.extra_airports))
+			airports.addExtra(code, getResources(), getPackageName());
 		this.airports.setData(airports);
 	}
 

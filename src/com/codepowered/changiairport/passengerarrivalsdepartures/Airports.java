@@ -35,4 +35,9 @@ public class Airports extends AbstractMapCache<String, String> {
 		return json.getString(k);
 	}
 
+	public void addExtra(String airportCode, Resources resources,
+			String packageName) {
+		if (!containsKey(airportCode))
+			put(airportCode, convert(airportCode, resources, packageName));
+	}
 }

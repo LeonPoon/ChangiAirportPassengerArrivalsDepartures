@@ -118,6 +118,7 @@
     <string name="airline.Thai_Airasia">泰國亞洲航空</string>
     <string name="airline.Thai_Airways_Intl_Ltd">泰國航空國際有限公司</string>
     <string name="airline.Thy_Turkish_Airlines">土耳其航空公司</string>
+    <string name="airline.Turkish_Airlines">土耳其航空公司</string>
     <string name="airline.Tigerair_Mandala">欣豐虎航（曼陀羅）</string>
     <string name="airline.Tigerair_Singapore">欣豐虎航（新加坡）</string>
     <string name="airline.Tigerair_Taiwan">台灣虎航</string>
@@ -208,9 +209,18 @@
     <string name="airline_name.VIRGIN_AUSTRALIA">airline_name.VIRGIN_AUSTRALIA</string>
     <string name="airline_name.XIAMEN_AIRLINES">airline_name.XIAMEN_AIRLINES</string>
     <string name="airline_name.ALL_NIPPON_AIRWAYS__NH_">全日本航空(NH)</string>
+    <string name="airline_name.TURKISH_AIRLINES">airline_name.TURKISH_AIRLINES</string>
+    <string name="airline_name.BIMAN_BANGLADESH_AIRLINES">airline_name.BIMAN_BANGLADESH_AIRLINES</string>
+    <string name="airline_name.HAINAN_AIRLINES">airline_name.HAINAN_AIRLINES</string>
+    <string name="airline_name.SAUDI_ARABIAN_AIRLINES">airline_name.SAUDI_ARABIAN_AIRLINES</string>
+    <string name="airline_name.REGENT_AIRWAYS">airline_name.REGENT_AIRWAYS</string>
+    <string name="airline_name.AIR_NIUGINI">airline_name.AIR_NIUGINI</string>
 
     <!-- airport -->
     <string name="airport."></string>
+    <string name="airport.CTS">北海道新千歲</string>
+    <string name="airport.PUS">金海釜山</string>
+    <string name="airport.OKA">沖繩那霸</string>
     <string name="airport.Hong_Kong">香港</string>
     <string name="airport.Abu_Dhabi">阿布扎比</string>
     <string name="airport.Addis_Ababa">亞的斯亞貝巴</string>

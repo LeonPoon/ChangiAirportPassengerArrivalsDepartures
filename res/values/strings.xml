@@ -18,4 +18,9 @@
     <string name="loading">Loading</string>
     <string name="pleaseWait">Please wait&#8230;</string>
 
+    <!--  -->
+    <string name="airport.CTS">New Chitose Hokkaido</string>
+    <string name="airport.PUS">Gimhae International</string>
+    <string name="airport.OKA">Naha Okinawa</string>
+
 </resources>

@@ -140,15 +140,6 @@ public abstract class AbstractFragment extends Fragment implements
 						/** Set data to your Views. */
 						Flight item = getItem(position);
 
-						((TextView) rowView.findViewById(R.id.txtScheduledTime))
-								.setText(formatDateTime(item.getDate(),
-										item.getScheduled_time()));
-						((TextView) rowView.findViewById(R.id.txtEstimatedTime))
-								.setText(formatDateTime(
-										item.getEstimated_date(),
-										item.getEstimated_time())
-										+ " " + item.getStatus());
-
 						String overseas = getOverseas(item);
 						String via = item.getVia();
 						if (via == null || (via = via.trim()).isEmpty())
@@ -161,6 +152,15 @@ public abstract class AbstractFragment extends Fragment implements
 
 						((TextView) rowView.findViewById(R.id.txtAirport))
 								.setText(overseas);
+
+						((TextView) rowView.findViewById(R.id.txtScheduledTime))
+								.setText(formatDateTime(item.getDate(),
+										item.getScheduled_time()));
+						((TextView) rowView.findViewById(R.id.txtEstimatedTime))
+								.setText(formatDateTime(
+										item.getEstimated_date(),
+										item.getEstimated_time())
+										+ " " + item.getStatus());
 
 						LinearLayout flights = (LinearLayout) rowView
 								.findViewById(R.id.flightsLayout);
