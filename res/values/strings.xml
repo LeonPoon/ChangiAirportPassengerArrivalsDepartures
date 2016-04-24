@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <string name="lang">en_SG</string>
+    
     <string name="app_name">Changi Airport Passenger Arrivals/Departures</string>
     <string name="airport_name">Changi Airport</string>
     <string name="action_refresh">Refresh</string>

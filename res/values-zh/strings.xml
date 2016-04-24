@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="lang">zh_CN</string>
+    
     <string name="app_name">樟宜機場客運航班資訊</string>
     <string name="airport_name">樟宜機場客運</string>
     <string name="action_refresh">刷新資料</string>

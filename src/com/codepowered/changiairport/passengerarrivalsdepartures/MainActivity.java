@@ -5,9 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.ParseException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.GZIPInputStream;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -18,6 +15,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.codepowered.changiairport.passengerarrivalsdepartures.Download.FlightArrivalsDownload;
+import com.codepowered.changiairport.passengerarrivalsdepartures.Download.FlightDeparturesDownload;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
@@ -34,17 +34,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.codepowered.changiairport.passengerarrivalsdepartures.Download.AirlinesDownload;
-import com.codepowered.changiairport.passengerarrivalsdepartures.Download.AirportsDownload;
-import com.codepowered.changiairport.passengerarrivalsdepartures.Download.FlightArrivalsDownload;
-import com.codepowered.changiairport.passengerarrivalsdepartures.Download.FlightDeparturesDownload;
-
-public class MainActivity extends Activity implements DataTarget,
-		OnClickListener {
-
-	private static final Download<?>[] DOWNLOADS = new Download[] {
-			new AirlinesDownload(), new AirportsDownload(),
-			new FlightArrivalsDownload(), new FlightDeparturesDownload() };
+public class MainActivity extends Activity implements DataTarget, OnClickListener {
 
 	private final Subscribers<Airports, AirportsSubscriber> airports = new Subscribers<Airports, AirportsSubscriber>() {
 
@@ -65,8 +55,7 @@ public class MainActivity extends Activity implements DataTarget,
 	private final Subscribers<FlightInfo, ArrivalsFlightInfoSubscriber> arrivalsFlightInfo = new Subscribers<FlightInfo, ArrivalsFlightInfoSubscriber>() {
 
 		@Override
-		protected void setData(FlightInfo data,
-				ArrivalsFlightInfoSubscriber subscriber) {
+		protected void setData(FlightInfo data, ArrivalsFlightInfoSubscriber subscriber) {
 			subscriber.setFlightArrivalsInfo(data);
 		}
 	};
@@ -74,8 +63,7 @@ public class MainActivity extends Activity implements DataTarget,
 	private final Subscribers<FlightInfo, DeparturesFlightInfoSubscriber> departuresFlightInfo = new Subscribers<FlightInfo, DeparturesFlightInfoSubscriber>() {
 
 		@Override
-		protected void setData(FlightInfo data,
-				DeparturesFlightInfoSubscriber subscriber) {
+		protected void setData(FlightInfo data, DeparturesFlightInfoSubscriber subscriber) {
 			subscriber.setFlightDeparturesInfo(data);
 		}
 	};
@@ -100,8 +88,7 @@ public class MainActivity extends Activity implements DataTarget,
 
 		@Override
 		protected void onPreExecute() {
-			dialog = ProgressDialog.show(MainActivity.this,
-					getText(R.string.loading), getText(R.string.pleaseWait));
+			dialog = ProgressDialog.show(MainActivity.this, getText(R.string.loading), getText(R.string.pleaseWait));
 		}
 
 		@Override
@@ -126,10 +113,8 @@ public class MainActivity extends Activity implements DataTarget,
 		protected void onPostExecute(Throwable exception) {
 			if (exception != null) {
 				Log.e("download", exception.toString());
-				new AlertDialog.Builder(MainActivity.this)
-						.setMessage(exception.toString())
-						.setNeutralButton("OK", MainActivity.this)
-						.setTitle("Failed").show();
+				new AlertDialog.Builder(MainActivity.this).setMessage(exception.toString())
+						.setNeutralButton("OK", MainActivity.this).setTitle("Failed").show();
 			}
 			dialog.dismiss();
 			finishedDownloadingData();
@@ -137,29 +122,14 @@ public class MainActivity extends Activity implements DataTarget,
 	}
 
 	private <T> void download(Download<T> download)
-			throws ClientProtocolException, IOException, JSONException,
-			ParseException {
+			throws ClientProtocolException, IOException, JSONException, ParseException {
 		String url = download.getUrl();
 		String input = readUrl(url);
-		JSONObject json = new JSONObject(stripCallback(input, download));
-		download.setData(this,
-				download.readJson(json, getResources(), getPackageName()));
+		JSONObject json = new JSONObject(input);
+		download.setData(this, download.readJson(json, getResources(), getPackageName()));
 	}
 
-	private String stripCallback(String input, Download<?> download) {
-		Pattern cb = download.getCallback();
-		try {
-			Matcher matcher = cb.matcher(input);
-			if (matcher.matches())
-				return matcher.group(1);
-			throw new IllegalStateException(cb.pattern() + ": " + input);
-		} catch (IllegalStateException e) {
-			throw new IllegalStateException(cb.pattern() + ": " + input, e);
-		}
-	}
-
-	public String readUrl(String url) throws ClientProtocolException,
-			IOException {
+	public String readUrl(String url) throws ClientProtocolException, IOException {
 		StringBuilder builder = new StringBuilder();
 		HttpClient client = new DefaultHttpClient();
 		HttpGet httpGet = new HttpGet(url);
@@ -169,9 +139,8 @@ public class MainActivity extends Activity implements DataTarget,
 		if (statusCode == 200) {
 			HttpEntity entity = response.getEntity();
 			InputStream content = entity.getContent();
-			content = new GZIPInputStream(content);
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					content));
+			// content = new GZIPInputStream(content);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(content));
 			String line;
 			while ((line = reader.readLine()) != null) {
 				builder.append(line);
@@ -182,11 +151,10 @@ public class MainActivity extends Activity implements DataTarget,
 		return builder.toString();
 	}
 
-	private <A extends Fragment> void addTab(ActionBar actionBar, int strId,
-			Class<A> aClass) {
+	private <A extends Fragment> void addTab(ActionBar actionBar, int strId, Class<A> aClass) {
 
-		actionBar.addTab(actionBar.newTab().setText(getText(strId))
-				.setTabListener(new TabListener<A>(this, null, aClass)));
+		actionBar.addTab(
+				actionBar.newTab().setText(getText(strId)).setTabListener(new TabListener<A>(this, null, aClass)));
 	}
 
 	@Override
@@ -210,7 +178,10 @@ public class MainActivity extends Activity implements DataTarget,
 	}
 
 	private void startLoadingData() {
-		new DownloadTask().execute(DOWNLOADS);
+		String lang = getText(R.string.lang).toString();
+		Download<?>[] downloads = new Download[] { new FlightArrivalsDownload(lang),
+				new FlightDeparturesDownload(lang) };
+		new DownloadTask().execute(downloads);
 	}
 
 	private void finishedDownloadingData() {
@@ -218,8 +189,7 @@ public class MainActivity extends Activity implements DataTarget,
 
 	}
 
-	public static class TabListener<T extends Fragment> implements
-			ActionBar.TabListener {
+	public static class TabListener<T extends Fragment> implements ActionBar.TabListener {
 
 		private Fragment mFragment;
 		private final Activity mActivity;
@@ -286,8 +256,7 @@ public class MainActivity extends Activity implements DataTarget,
 
 	@Override
 	public void setAirports(Airports airports) {
-		for (String code : getResources()
-				.getStringArray(R.array.extra_airports))
+		for (String code : getResources().getStringArray(R.array.extra_airports))
 			airports.addExtra(code, getResources(), getPackageName());
 		this.airports.setData(airports);
 	}
