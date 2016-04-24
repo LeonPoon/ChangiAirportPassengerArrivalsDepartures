@@ -74,7 +74,11 @@ public class Airport implements Comparable<Airport> {
 	}
 
 	public boolean includes(Flight flight) {
-		return entry == null || flight.getAirport().equals(getCode())
-				|| flight.getVia().equals(getName());
+		if (entry == null || getCode().equals(flight.getDestination()) || getCode().equals(flight.getOrigin()))
+			return true;
+		for (String via : flight.getVia())
+			if (getCode().equals(via))
+				return true;
+		return false;
 	}
 }
