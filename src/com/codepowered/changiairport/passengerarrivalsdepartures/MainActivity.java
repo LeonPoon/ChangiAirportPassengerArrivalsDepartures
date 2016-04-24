@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.ParseException;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -82,7 +85,7 @@ public class MainActivity extends Activity implements DataTarget, OnClickListene
 		startLoadingData();
 	}
 
-	public class DownloadTask extends AsyncTask<Download<?>, String, Throwable> {
+	public class DownloadTask extends AsyncTask<Download<?, ?>, String, Throwable> {
 
 		ProgressDialog dialog;
 
@@ -92,11 +95,11 @@ public class MainActivity extends Activity implements DataTarget, OnClickListene
 		}
 
 		@Override
-		protected Throwable doInBackground(Download<?>... downloads) {
+		protected Throwable doInBackground(Download<?, ?>... downloads) {
 
 			dialog.setMax(downloads.length);
 
-			for (Download<?> download : downloads)
+			for (Download<?, ?> download : downloads)
 
 				try {
 					download(download);
@@ -121,7 +124,7 @@ public class MainActivity extends Activity implements DataTarget, OnClickListene
 		}
 	}
 
-	private <T> void download(Download<T> download)
+	private <T, U> void download(Download<T, U> download)
 			throws ClientProtocolException, IOException, JSONException, ParseException {
 		String url = download.getUrl();
 		String input = readUrl(url);
@@ -177,10 +180,47 @@ public class MainActivity extends Activity implements DataTarget, OnClickListene
 		return super.onOptionsItemSelected(item);
 	}
 
+	public static enum Sources {
+		arrivals, departures;
+	}
+
+	public class AirportsSynchroniser {
+
+		private final EnumMap<Sources, FlightInfo> map = new EnumMap<Sources, FlightInfo>(Sources.class);
+
+		public AirportsSynchroniser add(Sources source, FlightInfo flightInfo) {
+			map.put(source, flightInfo);
+			return map.size() == Sources.values().length ? this : null;
+		}
+
+		public Airports getAirports() {
+			Map<String, String> m = new TreeMap<String, String>();
+			for (FlightInfo flInf : map.values())
+				for (Flight fl : flInf) {
+					if (fl.getDestination() != null)
+						m.put(fl.getDestination(), fl.getDestination());
+					if (fl.getOrigin() != null)
+						m.put(fl.getOrigin(), fl.getOrigin());
+					for (String via : fl.getVia())
+						m.put(via, via);
+				}
+			try {
+				return Airports.parse(new JSONObject(m), getResources(), getPackageName());
+			} catch (JSONException e) {
+				return null;
+			}
+		}
+
+		public FlightInfo getFlightInfo(Sources source) {
+			return map.get(source);
+		}
+	}
+
 	private void startLoadingData() {
 		String lang = getText(R.string.lang).toString();
-		Download<?>[] downloads = new Download[] { new FlightArrivalsDownload(lang),
-				new FlightDeparturesDownload(lang) };
+		AirportsSynchroniser sync = new AirportsSynchroniser();
+		Download<?, ?>[] downloads = new Download[] { new FlightArrivalsDownload<AirportsSynchroniser>(lang, sync),
+				new FlightDeparturesDownload<AirportsSynchroniser>(lang, sync) };
 		new DownloadTask().execute(downloads);
 	}
 
@@ -268,12 +308,24 @@ public class MainActivity extends Activity implements DataTarget, OnClickListene
 
 	@Override
 	public void setFlightArrivalsInfo(FlightInfo flightInfo) {
-		this.arrivalsFlightInfo.setData(flightInfo);
+		setFlightInfo(flightInfo, Sources.arrivals);
 	}
 
 	@Override
 	public void setFlightDeparturesInfo(FlightInfo flightInfo) {
-		this.departuresFlightInfo.setData(flightInfo);
+		setFlightInfo(flightInfo, Sources.departures);
+	}
+
+	private void setFlightInfo(FlightInfo flightInfo, Sources source) {
+		AirportsSynchroniser sync = (AirportsSynchroniser) flightInfo.getDownload().getCallbackObject();
+		sync = sync.add(source, flightInfo);
+		if (sync != null) {
+			Airports airports = sync.getAirports();
+			if (airports != null)
+				setAirports(airports);
+			this.arrivalsFlightInfo.setData(sync.getFlightInfo(Sources.arrivals));
+			this.departuresFlightInfo.setData(sync.getFlightInfo(Sources.departures));
+		}
 	}
 
 	@Override

@@ -8,18 +8,20 @@ import org.json.JSONObject;
 import android.content.res.Resources;
 import android.util.Log;
 
-public abstract class Download<DataType> {
+public abstract class Download<DataType, CallbackType> {
 
 	public static enum FlightsDate {
 		today, tomorrow, yesterday;
 	}
 
-	public static abstract class AbstractDownload<DataType> extends Download<DataType> {
+	public static abstract class AbstractDownload<DataType, CallbackType> extends Download<DataType, CallbackType> {
 
 		private static final boolean IS_PRINT_DOWNLOADED = true;
 		private final String url, typ;
+		private final CallbackType callbackObject;
 
-		protected AbstractDownload(String url, FlightsDate date, String lang) {
+		protected AbstractDownload(String url, FlightsDate date, String lang, CallbackType callbackObject) {
+			this.callbackObject = callbackObject;
 			this.typ = url;
 			this.url = "http://www.changiairport.com/cag-web/flights/" + url + "?date=" + date + "&lang=" + lang
 					+ "&callback=JSON_CALLBACK";
@@ -38,6 +40,10 @@ public abstract class Download<DataType> {
 			return data;
 		}
 
+		public CallbackType getCallbackObject() {
+			return callbackObject;
+		}
+
 		@Override
 		public String getUrl() {
 			return url;
@@ -49,23 +55,23 @@ public abstract class Download<DataType> {
 		}
 	}
 
-	public static abstract class FlightInfoDownload extends AbstractDownload<FlightInfo> {
+	public static abstract class FlightInfoDownload<CallbackType> extends AbstractDownload<FlightInfo, CallbackType> {
 
-		protected FlightInfoDownload(String url, FlightsDate date, String lang) {
-			super(url, date, lang);
+		protected FlightInfoDownload(String url, FlightsDate date, String lang, CallbackType callbackObject) {
+			super(url, date, lang, callbackObject);
 		}
 
 		@Override
 		public FlightInfo readJsonReal(JSONObject json, Resources resources, String packageName)
 				throws JSONException, ParseException {
-			return FlightInfo.parse(json, resources, packageName);
+			return FlightInfo.parse(this, json, resources, packageName);
 		}
 	}
 
-	public static class FlightArrivalsDownload extends FlightInfoDownload {
+	public static class FlightArrivalsDownload<CallbackType> extends FlightInfoDownload<CallbackType> {
 
-		protected FlightArrivalsDownload(String lang) {
-			super("arrivals", FlightsDate.today, lang);
+		protected FlightArrivalsDownload(String lang, CallbackType callbackObject) {
+			super("arrivals", FlightsDate.today, lang, callbackObject);
 		}
 
 		@Override
@@ -75,10 +81,10 @@ public abstract class Download<DataType> {
 
 	}
 
-	public static class FlightDeparturesDownload extends FlightInfoDownload {
+	public static class FlightDeparturesDownload<CallbackType> extends FlightInfoDownload<CallbackType> {
 
-		protected FlightDeparturesDownload(String lang) {
-			super("departures", FlightsDate.today, lang);
+		protected FlightDeparturesDownload(String lang, CallbackType callbackObject) {
+			super("departures", FlightsDate.today, lang, callbackObject);
 		}
 
 		@Override
