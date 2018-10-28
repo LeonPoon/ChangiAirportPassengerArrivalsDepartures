@@ -1,34 +1,7 @@
 package com.codepowered.changiairport.passengerarrivalsdepartures;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.text.ParseException;
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.TreeMap;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.codepowered.changiairport.passengerarrivalsdepartures.Download.FlightArrivalsDownload;
-import com.codepowered.changiairport.passengerarrivalsdepartures.Download.FlightDeparturesDownload;
-
-import android.app.ActionBar;
+import android.app.*;
 import android.app.ActionBar.Tab;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.AsyncTask;
@@ -36,8 +9,27 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.codepowered.changiairport.passengerarrivalsdepartures.Download.FlightArrivalsDownload;
+import com.codepowered.changiairport.passengerarrivalsdepartures.Download.FlightDeparturesDownload;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.Exchanger;
 
 public class MainActivity extends Activity implements DataTarget, OnClickListener {
+
+	private static final String TAG = "MainActivity";
 
 	private final Subscribers<Airports, AirportsSubscriber> airports = new Subscribers<Airports, AirportsSubscriber>() {
 
@@ -125,33 +117,42 @@ public class MainActivity extends Activity implements DataTarget, OnClickListene
 	}
 
 	private <T, U> void download(Download<T, U> download)
-			throws ClientProtocolException, IOException, JSONException, ParseException {
+			throws InterruptedException, IOException, JSONException, ParseException {
 		String url = download.getUrl();
 		String input = readUrl(url);
 		JSONObject json = new JSONObject(input);
 		download.setData(this, download.readJson(json, getResources(), getPackageName()));
 	}
 
-	public String readUrl(String url) throws ClientProtocolException, IOException {
+	public String readUrl(String url) throws IOException, InterruptedException {
+		final Exchanger<Object> exchanger = new Exchanger<>();
 		StringBuilder builder = new StringBuilder();
-		HttpClient client = new DefaultHttpClient();
-		HttpGet httpGet = new HttpGet(url);
-		HttpResponse response = client.execute(httpGet);
-		StatusLine statusLine = response.getStatusLine();
-		int statusCode = statusLine.getStatusCode();
-		if (statusCode == 200) {
-			HttpEntity entity = response.getEntity();
-			InputStream content = entity.getContent();
-			// content = new GZIPInputStream(content);
-			BufferedReader reader = new BufferedReader(new InputStreamReader(content));
-			String line;
-			while ((line = reader.readLine()) != null) {
-				builder.append(line);
+		RequestQueue queue = Volley.newRequestQueue(this);
+		Request stringRequest = new StringRequest(Request.Method.GET, url,
+				new Response.Listener<String>() {
+					@Override
+					public void onResponse(String response) {
+						try {
+							exchanger.exchange(response);
+						} catch (InterruptedException e) {
+							Log.e(TAG, "onResponse: while exchanging", e);
+						}
+					}
+				}, new Response.ErrorListener() {
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				try {
+					exchanger.exchange(error);
+				} catch (InterruptedException e) {
+					Log.e(TAG, "onErrorResponse: while exchanging", e);
+				}
 			}
-		} else {
-			throw new IOException("status = " + statusCode);
-		}
-		return builder.toString();
+		});
+		queue.add(stringRequest);
+		Object o = exchanger.exchange(null);
+		if (o instanceof Throwable)
+			throw new IOException((Throwable)o);
+		return o.toString();
 	}
 
 	private <A extends Fragment> void addTab(ActionBar actionBar, int strId, Class<A> aClass) {
