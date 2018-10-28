@@ -23,5 +23,6 @@
     <string name="airport.CTS">New Chitose Hokkaido</string>
     <string name="airport.PUS">Gimhae International</string>
     <string name="airport.OKA">Naha Okinawa</string>
+    <string name="action_about">About App</string>
 
 </resources>

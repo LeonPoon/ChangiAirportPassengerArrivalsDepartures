@@ -177,8 +177,16 @@ public class MainActivity extends Activity implements DataTarget, OnClickListene
 		if (id == R.id.action_settings) {
 			startLoadingData();
 			return true;
+		} else if (id == R.id.action_about) {
+			showAbout();
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void showAbout() {
+		AboutDialogFragment dialog = new AboutDialogFragment();
+		dialog.show(getFragmentManager(), "AboutDialogFragment");
 	}
 
 	public static enum Sources {

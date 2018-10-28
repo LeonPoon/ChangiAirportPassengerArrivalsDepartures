@@ -421,5 +421,6 @@
     <string name="airport.Yogyakarta">日惹</string>
     <string name="airport.Zhengzhou">鄭州</string>
     <string name="airport.Zurich">蘇黎世</string>
+    <string name="action_about">關於此應用</string>
 
 </resources>
