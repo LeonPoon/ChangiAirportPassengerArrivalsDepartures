@@ -242,6 +242,7 @@
     <string name="airport.CTS">北海道新千歲</string>
     <string name="airport.PUS">金海釜山</string>
     <string name="airport.OKA">沖繩那霸</string>
+    <string name="airport.HET">呼和浩特白塔</string>
     <string name="airport.Hong_Kong">香港</string>
     <string name="airport.Abu_Dhabi">阿布扎比</string>
     <string name="airport.Addis_Ababa">亞的斯亞貝巴</string>
@@ -290,6 +291,7 @@
     <string name="airport.Fukuoka">福岡</string>
     <string name="airport.Fuzhou">福州</string>
     <string name="airport.Gold_Coast">黃金海岸</string>
+    <string name="airport.Guwahati">古瓦哈提</string>
     <string name="airport.Guangzhou">廣州</string>
     <string name="airport.Guilin">桂林</string>
     <string name="airport.Guiyang">貴陽</string>
