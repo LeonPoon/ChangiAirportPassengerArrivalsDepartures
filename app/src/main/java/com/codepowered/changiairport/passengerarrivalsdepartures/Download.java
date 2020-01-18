@@ -23,7 +23,7 @@ public abstract class Download<DataType, CallbackType> {
 		protected AbstractDownload(String url, FlightsDate date, String lang, CallbackType callbackObject) {
 			this.callbackObject = callbackObject;
 			this.typ = url;
-			this.url = "http://www.changiairport.com/cag-web/flights/" + url + "?date=" + date + "&lang=" + lang
+			this.url = "https://www.changiairport.com/cag-web/flights/" + url + "?date=" + date + "&lang=" + lang
 					+ "&callback=JSON_CALLBACK";
 			Log.i(typ + "_url", this.getUrl());
 		}
