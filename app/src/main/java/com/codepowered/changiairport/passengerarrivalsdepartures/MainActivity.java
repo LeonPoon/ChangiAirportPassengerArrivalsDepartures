@@ -9,10 +9,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
+import com.android.volley.*;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.codepowered.changiairport.passengerarrivalsdepartures.Download.FlightArrivalsDownload;
@@ -21,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.EnumMap;
 import java.util.Map;
@@ -147,7 +146,21 @@ public class MainActivity extends Activity implements DataTarget, OnClickListene
 					Log.e(TAG, "onErrorResponse: while exchanging", e);
 				}
 			}
-		});
+		}) {
+			@Override
+			protected Response<String> parseNetworkResponse(NetworkResponse response) {
+				String parsed;
+				try {
+					parsed = new String(response.data, "UTF-8");
+				} catch (UnsupportedEncodingException e) {
+					// Since minSdkVersion = 8, we can't call
+					// new String(response.data, Charset.defaultCharset())
+					// So suppress the warning instead.
+					parsed = new String(response.data);
+				}
+				return Response.success(parsed, HttpHeaderParser.parseCacheHeaders(response));
+			}
+		};
 		queue.add(stringRequest);
 		Object o = exchanger.exchange(null);
 		if (o instanceof Throwable)
